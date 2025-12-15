@@ -159,6 +159,56 @@ function initEventListeners() {
         zipInput.addEventListener('input', (e) => state.zipcode = e.target.value);
     }
 
+    // --- SLIDERS ---
+
+    // Age Slider
+    const ageSlider = document.getElementById('ageSlider');
+    const ageDisplay = document.getElementById('ageDisplay');
+
+    if (ageSlider) {
+        state.age = "Less than 1 Year"; // Init
+        ageSlider.addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            let label = "";
+            if (val === 0) label = "Less than 1 Year";
+            else if (val === 10) label = "10+ Years";
+            else label = `${val} Years`;
+
+            state.age = label;
+            ageDisplay.innerText = label;
+        });
+    }
+
+    // Stories Slider
+    const storiesSlider = document.getElementById('storiesSlider');
+    const storiesDisplay = document.getElementById('storiesDisplay');
+
+    if (storiesSlider) {
+        state.stories = "1 Story"; // Init
+        storiesSlider.addEventListener('input', (e) => {
+            const val = e.target.value;
+            const label = val === '3' ? "3+ Stories" : `${val} Story${val > 1 ? 'ies' : ''}`; // Corrected pluralization
+            state.stories = label;
+            storiesDisplay.innerText = label;
+        });
+    }
+
+    // Duration Slider
+    const durationSlider = document.getElementById('durationSlider');
+    const durationDisplay = document.getElementById('durationDisplay');
+    const durationLabels = ["Just noticed", "Less than 1 month", "1–6 months", "More than 6 months"];
+
+    if (durationSlider) {
+        state.duration = durationLabels[0]; // Init
+        durationSlider.addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            const label = durationLabels[val];
+            state.duration = label;
+            durationDisplay.innerText = label;
+        });
+    }
+
+
     // Navigation Buttons
     document.querySelectorAll('.next-btn').forEach(btn => {
         btn.addEventListener('click', () => nextStep());
@@ -217,7 +267,7 @@ function highlightMissingFields(step) {
         if (state.relation === '') gsap.to('.shape-option[data-group="relation"]', { borderColor: "red", duration: 0.2, yoyo: true, repeat: 1, clearProps: "borderColor" });
     }
     if (step === 2) {
-        ['type', 'age', 'stories', 'size'].forEach(group => {
+        ['type', 'size'].forEach(group => {
             if (state[group] === '') {
                 // ideally target the container of the group but targeting options works to show effect
                 gsap.to(`.shape-option[data-group="${group}"]`, { borderColor: "red", duration: 0.2, yoyo: true, repeat: 1, clearProps: "borderColor" });
@@ -225,7 +275,7 @@ function highlightMissingFields(step) {
         });
     }
     if (step === 3) {
-        ['situation', 'duration'].forEach(group => {
+        ['situation'].forEach(group => {
             if (state[group] === '') {
                 gsap.to(`.shape-option[data-group="${group}"]`, { borderColor: "red", duration: 0.2, yoyo: true, repeat: 1, clearProps: "borderColor" });
             }

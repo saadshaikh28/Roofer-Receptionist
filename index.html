@@ -178,21 +178,12 @@
                         <!-- Approximate Age -->
                         <div class="form-group">
                             <label>Approximate Age of Roof</label>
-                            <div class="shape-grid">
-                                <div class="shape-option" data-value="0-5" data-group="age">
-                                    <span>0–5 years</span>
-                                </div>
-                                <div class="shape-option" data-value="6-10" data-group="age">
-                                    <span>6–10 years</span>
-                                </div>
-                                <div class="shape-option" data-value="11-20" data-group="age">
-                                    <span>11–20 years</span>
-                                </div>
-                                <div class="shape-option" data-value="20+" data-group="age">
-                                    <span>20+ years</span>
-                                </div>
-                                <div class="shape-option" data-value="unsure" data-group="age">
-                                    <span>Not sure</span>
+                            <div class="slider-container">
+                                <span id="ageDisplay" class="slider-val-display">Less than 1 Year</span>
+                                <input type="range" id="ageSlider" min="0" max="10" step="1" value="0">
+                                <div class="slider-labels">
+                                    <span>New</span>
+                                    <span>10+</span>
                                 </div>
                             </div>
                         </div>
@@ -200,14 +191,12 @@
                         <!-- Stories -->
                         <div class="form-group">
                             <label>Number of Stories</label>
-                            <div class="shape-grid">
-                                <div class="shape-option" data-value="1" data-group="stories">
+                            <div class="slider-container">
+                                <span id="storiesDisplay" class="slider-val-display">1 Story</span>
+                                <input type="range" id="storiesSlider" min="1" max="3" step="1" value="1">
+                                <div class="slider-labels">
                                     <span>1</span>
-                                </div>
-                                <div class="shape-option" data-value="2" data-group="stories">
                                     <span>2</span>
-                                </div>
-                                <div class="shape-option" data-value="3+" data-group="stories">
                                     <span>3+</span>
                                 </div>
                             </div>
@@ -277,18 +266,12 @@
                         <!-- Issue Duration -->
                         <div class="form-group">
                             <label>How long have you been aware of this issue?</label>
-                            <div class="shape-grid">
-                                <div class="shape-option" data-value="noticed" data-group="duration">
-                                    <span>Just noticed</span>
-                                </div>
-                                <div class="shape-option" data-value="1mo" data-group="duration">
-                                    <span>Less than 1 month</span>
-                                </div>
-                                <div class="shape-option" data-value="6mo" data-group="duration">
-                                    <span>1–6 months</span>
-                                </div>
-                                <div class="shape-option" data-value="6mo+" data-group="duration">
-                                    <span>More than 6 months</span>
+                            <div class="slider-container">
+                                <span id="durationDisplay" class="slider-val-display">Just noticed</span>
+                                <input type="range" id="durationSlider" min="0" max="3" step="1" value="0">
+                                <div class="slider-labels">
+                                    <span>Recent</span>
+                                    <span>Long term</span>
                                 </div>
                             </div>
                         </div>
