@@ -65,28 +65,37 @@ function loadRooferConfig() {
     }
 
     const configFile = `configs/${clientName}.json`;
-    console.log(`[Config Debug] Hostname: ${hostname}`);
-    console.log(`[Config Debug] Client Name: ${clientName}`);
-    console.log(`[Config Debug] Attempting to load: ${configFile}`);
+    console.log(`%c[Config Debug] Hostname: ${hostname}`, "color: #3b82f6; font-weight: bold;");
+    console.log(`%c[Config Debug] Client Name: ${clientName}`, "color: #3b82f6; font-weight: bold;");
+    console.log(`%c[Config Debug] Attempting to load: ${configFile}`, "color: #3b82f6; font-weight: bold;");
+
+    if (window.location.protocol === 'file:') {
+        console.warn("%c[Config Warning] You are opening this file directly (file://). Browsers like Chrome block 'fetch' calls for local files. Please use a local server (e.g., VS Code Live Server or 'npx serve') to test JSON configurations.", "color: #f59e0b; font-weight: bold;");
+        return; // Stop here as fetch will fail
+    }
 
     fetch(configFile)
         .then(response => {
-            if (!response.ok) throw new Error("Config not found");
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             return response.json();
         })
         .then(config => {
             rooferConfig = { ...rooferConfig, ...config };
-            console.log("Roofer config loaded successfully:", rooferConfig);
+            console.log("%c[Config Success] Roofer config merged:", "color: #10b981; font-weight: bold;", rooferConfig);
         })
         .catch(error => {
-            console.error(`Error loading ${configFile}, falling back to default:`, error);
-            // Fallback to the main roofer_config.json if the specific one fails
-            fetch('configs/roofer_config.json')
-                .then(res => res.json())
-                .then(data => {
-                    rooferConfig = { ...rooferConfig, ...data };
-                })
-                .catch(err => console.error("Critical: Could not load fallback config", err));
+            console.error(`%c[Config Error] Failed to load ${configFile}:`, "color: #ef4444; font-weight: bold;", error);
+
+            // Fallback to the default roofer_config.json if a specific one fails
+            if (clientName !== 'roofer_config') {
+                console.log("%c[Config Info] Falling back to default configs/roofer_config.json", "color: #3b82f6;");
+                fetch('configs/roofer_config.json')
+                    .then(res => res.json())
+                    .then(data => {
+                        rooferConfig = { ...rooferConfig, ...data };
+                    })
+                    .catch(err => console.error("Critical: Could not load fallback config", err));
+            }
         });
 }
 
