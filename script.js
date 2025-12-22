@@ -17,7 +17,6 @@ let rooferConfig = {
 // State Object
 let state = {
     step: 1,
-    zipcode: '',
     relation: '',
     type: '',
     age: '',
@@ -215,11 +214,6 @@ function initEventListeners() {
         });
     });
 
-    // Zipcode Input
-    const zipInput = document.getElementById('zipcode');
-    if (zipInput) {
-        zipInput.addEventListener('input', (e) => state.zipcode = e.target.value);
-    }
 
     // --- SLIDERS ---
     function updateSliderFill(slider) {
@@ -327,8 +321,8 @@ function prevStep() {
 
 function validateStep(step) {
     if (step === 1) {
-        // Postal Code & Relation
-        return state.zipcode.length >= 3 && state.relation !== '';
+        // Relation
+        return state.relation !== '';
     }
     if (step === 2) {
         // Type, Age, Stories, Size
@@ -344,7 +338,6 @@ function validateStep(step) {
 function highlightMissingFields(step) {
     // Helper to find groups that are empty in the current step and shake them
     if (step === 1) {
-        if (state.zipcode.length < 3) gsap.to('#zipcode', { borderColor: "red", duration: 0.2, yoyo: true, repeat: 3, onComplete: () => { document.getElementById('zipcode').style.borderColor = ""; } });
         if (state.relation === '') gsap.to('.shape-option[data-group="relation"]', { borderColor: "red", duration: 0.2, yoyo: true, repeat: 1, clearProps: "borderColor" });
     }
     if (step === 2) {
@@ -404,7 +397,6 @@ function prepareContactLinks() {
     const message = `Hello ${rooferConfig.name}, I'd like to reach out regarding my roof.
     
 Details:
-- Postal Code: ${state.zipcode}
 - Property: ${state.relation}
 - Roof Type: ${state.type}
 - RoofAge: ${state.age}
