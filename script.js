@@ -86,14 +86,26 @@ function loadRooferConfig() {
 
             // Personalization
             const heroTitle = document.querySelector('.hero-title');
+            const ogTitle = document.getElementById('ogTitle');
+            const twitterTitle = document.getElementById('twitterTitle');
+            const displayName = rooferConfig.companyName || rooferConfig.name || "Roofer";
+
             if (rooferConfig.companyName) {
-                document.title = `${rooferConfig.companyName} - Roofing Estimate`;
+                const fullTitle = `${rooferConfig.companyName} - Roofing Estimate`;
+                document.title = fullTitle;
+                if (ogTitle) ogTitle.setAttribute('content', fullTitle);
+                if (twitterTitle) twitterTitle.setAttribute('content', fullTitle);
+
                 heroTitle.innerHTML = `
                     <span class="line">Roofing Cost Estimate</span>
                     <span class="line brand-line">by <span class="company-brand">${rooferConfig.companyName}</span></span>
                 `;
             } else {
-                document.title = "Roofing Cost Estimate";
+                const defaultTitle = "Roofing Cost Estimate";
+                document.title = defaultTitle;
+                if (ogTitle) ogTitle.setAttribute('content', defaultTitle);
+                if (twitterTitle) twitterTitle.setAttribute('content', defaultTitle);
+
                 heroTitle.innerHTML = `<span class="line">Roofing Cost Estimate</span>`;
             }
         })
