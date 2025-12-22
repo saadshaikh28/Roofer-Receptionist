@@ -617,6 +617,58 @@ input:checked+.slider:before {
     color: var(--text-muted);
 }
 
+/* Map Styling */
+#map-container {
+    padding: 2px;
+    height: 300px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    position: relative;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    /* Slightly thicker and more visible */
+    margin-bottom: 2rem;
+    background: #fff;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+    border-radius: calc(var(--radius-md) - 2px);
+    z-index: 5;
+}
+
+/* Marker Styling */
+.leaflet-container {
+    background: #f4f1ed !important;
+}
+
+.leaflet-control-zoom {
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4) !important;
+}
+
+.leaflet-control-zoom a {
+    background: var(--surface-glass-dark) !important;
+    color: #fff !important;
+    border: 1px solid var(--glass-border) !important;
+}
+
+.leaflet-control-zoom a:hover {
+    background: var(--accent-color) !important;
+    color: #000 !important;
+}
+
+.leaflet-control-attribution {
+    background: rgba(0, 0, 0, 0.5) !important;
+    color: var(--text-muted) !important;
+    font-size: 0.7rem !important;
+}
+
+.leaflet-control-attribution a {
+    color: var(--accent-color) !important;
+}
+
 /* Premium Slider Styling */
 .slider-container {
     width: 100%;

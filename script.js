@@ -17,6 +17,7 @@ let rooferConfig = {
 // State Object
 let state = {
     step: 1,
+    location: null, // Lat/Lng object
     relation: '',
     type: '',
     age: '',
@@ -37,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initThreeJS();
     initGSAP();
     initEventListeners();
+    initMap();
     updateUI();
 });
 
@@ -192,6 +194,78 @@ function initGSAP() {
         }, "-=0.3");
 }
 
+// --- MAP INTEGRATION ---
+let map, marker;
+
+async function locateUserByIP() {
+    try {
+        const response = await fetch('https://ipapi.co/json/');
+        if (!response.ok) throw new Error('IP detection failed');
+        const data = await response.json();
+        return { lat: data.latitude, lng: data.longitude, zoom: 11 };
+    } catch (error) {
+        console.warn("Geolocation Error: Falling back to world view.", error);
+        return { lat: 20, lng: 0, zoom: 2 }; // World view fallback
+    }
+}
+
+async function initMap() {
+    const mapContainer = document.getElementById('map');
+    if (!mapContainer) return;
+
+    // Get initial view based on IP or fallback
+    const initialView = await locateUserByIP();
+    map = L.map('map').setView([initialView.lat, initialView.lng], initialView.zoom);
+
+    // CartoDB Voyager tiles (clear, light, and high contrast)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20
+    }).addTo(map);
+
+    // Click handler
+    map.on('click', (e) => {
+        const { lat, lng } = e.latlng;
+        state.location = { lat: lat.toFixed(6), lng: lng.toFixed(6) };
+
+        if (marker) {
+            marker.setLatLng(e.latlng);
+        } else {
+            marker = L.marker(e.latlng, {
+                icon: L.divIcon({
+                    className: 'custom-marker',
+                    html: `<div style="color: #ef4444; filter: drop-shadow(0 0 4px rgba(0,0,0,0.5));">
+                             <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="4" stroke-linecap="round" fill="none">
+                               <line x1="18" y1="6" x2="6" y2="18"></line>
+                               <line x1="6" y1="6" x2="18" y2="18"></line>
+                             </svg>
+                           </div>`,
+                    iconSize: [24, 24],
+                    iconAnchor: [12, 12]
+                })
+            }).addTo(map);
+        }
+
+        // Visual Confirmation (Much more intense green glow)
+        gsap.fromTo("#map-container",
+            { borderColor: "#22c55e", boxShadow: "0 0 40px rgba(34, 197, 94, 1)", borderWidth: "4px" },
+            { borderColor: "rgba(255, 255, 255, 0.15)", boxShadow: "0 0 0px rgba(34, 197, 94, 0)", borderWidth: "2px", duration: 1.5, ease: "power2.out" }
+        );
+
+        // Auto-advance if relation is also selected
+        if (state.relation) {
+            setTimeout(() => {
+                if (state.step === 1 && state.location && state.relation) {
+                    nextStep();
+                }
+            }, 1000);
+        }
+    });
+
+    window.addEventListener('resize', () => map.invalidateSize());
+}
+
 // --- WIZARD LOGIC ---
 function initEventListeners() {
 
@@ -323,8 +397,8 @@ function prevStep() {
 
 function validateStep(step) {
     if (step === 1) {
-        // Relation
-        return state.relation !== '';
+        // Relation & Location
+        return state.relation !== '' && state.location !== null;
     }
     if (step === 2) {
         // Type, Age, Stories, Size
@@ -340,7 +414,13 @@ function validateStep(step) {
 function highlightMissingFields(step) {
     // Helper to find groups that are empty in the current step and shake them
     if (step === 1) {
-        if (state.relation === '') gsap.to('.shape-option[data-group="relation"]', { borderColor: "red", duration: 0.2, yoyo: true, repeat: 1, clearProps: "borderColor" });
+        if (state.location === null) {
+            gsap.fromTo('#map-container',
+                { borderColor: "#ef4444", boxShadow: "0 0 25px rgba(239, 68, 68, 0.7)", x: -10 },
+                { borderColor: "rgba(255, 255, 255, 0.15)", boxShadow: "0 0 0px rgba(0,0,0,0)", x: 0, duration: 0.1, repeat: 5, yoyo: true, clearProps: "x" }
+            );
+        }
+        if (state.relation === '') gsap.to('.shape-option[data-group="relation"]', { borderColor: "#ef4444", duration: 0.2, yoyo: true, repeat: 1, clearProps: "borderColor" });
     }
     if (step === 2) {
         ['type', 'size'].forEach(group => {
@@ -386,6 +466,11 @@ function updateUI() {
                 { opacity: 0, y: 10 },
                 { opacity: 1, y: 0, duration: 0.4, clearProps: "all" }
             );
+
+            // Fix for Leaflet map grey tiles when Step 1 is active
+            if (parseInt(s.dataset.step) === 1 && map) {
+                setTimeout(() => map.invalidateSize(), 150);
+            }
         }
     });
 }
@@ -399,6 +484,7 @@ function prepareContactLinks() {
     const message = `Hello ${rooferConfig.name}, I'd like to reach out regarding my roof.
     
 Details:
+- Location: ${state.location ? `https://www.google.com/maps?q=${state.location.lat},${state.location.lng}` : 'Not pinned'}
 - Property: ${state.relation}
 - Roof Type: ${state.type}
 - RoofAge: ${state.age}
