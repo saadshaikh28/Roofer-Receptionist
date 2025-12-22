@@ -2,36 +2,38 @@
 
 /* Design System Variables */
 :root {
-    /* Colors */
-    --primary-color: #0F172A;
-    /* Deep Navy */
-    --primary-light: #334155;
-    --accent-color: #F59E0B;
-    /* Amber/Gold */
-    --accent-hover: #D97706;
-    --accent-glow: rgba(245, 158, 11, 0.4);
+    /* Colors - Black Glossy Palette */
+    --primary-color: #000000;
+    --primary-light: #111827;
+    --accent-color: #FACC15;
+    /* High-end Yellow/Gold */
+    --accent-hover: #EAB308;
+    --accent-glow: rgba(250, 204, 21, 0.4);
 
     --text-light: #F8FAFC;
     --text-muted: #94A3B8;
-    --text-dark: #1E293B;
+    --text-dark: #E2E8F0;
 
-    --bg-body: #F1F5F9;
-    --surface-glass: rgba(255, 255, 255, 0.95);
-    --surface-glass-dark: rgba(15, 23, 42, 0.9);
+    --bg-body: #050505;
+    --surface-glass: rgba(15, 23, 42, 0.7);
+    --surface-glass-dark: rgba(0, 0, 0, 0.85);
+
+    /* Glossy Elements */
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shine: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0) 100%);
 
     /* Gradients */
-    --gradient-hero: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.8));
-    --gradient-accent: linear-gradient(135deg, #F59E0B, #D97706);
+    --gradient-hero: radial-gradient(circle at center, #111827 0%, #000000 100%);
+    --gradient-accent: linear-gradient(135deg, #FACC15, #EAB308);
 
     /* Shadows */
-    --shadow-card: 0 20px 40px -5px rgba(0, 0, 0, 0.1), 0 10px 20px -5px rgba(0, 0, 0, 0.05);
-    --shadow-float: 0 -5px 20px rgba(0, 0, 0, 0.1);
-    --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+    --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    --shadow-float: 0 -5px 20px rgba(0, 0, 0, 0.3);
 
-    /* Spacing & Layout */
+    /* Layout */
     --container-width: 1100px;
-    --radius-lg: 24px;
-    --radius-md: 12px;
+    --radius-lg: 32px;
+    --radius-md: 16px;
     --radius-full: 9999px;
 }
 
@@ -83,22 +85,20 @@ h3 {
     height: 100vh;
     z-index: -1;
     pointer-events: none;
-    opacity: 0.6;
+    opacity: 0.8;
 }
 
 /* Hero Section */
 .hero {
     position: relative;
     height: 85vh;
-    /* Taller hero */
     min-height: 600px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--text-light);
     overflow: hidden;
-    /* Removed static background image for 3D effect, using gradient overlay */
-    background: radial-gradient(circle at center, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 1) 100%);
+    background: var(--gradient-hero);
 }
 
 .hero-content {
@@ -213,16 +213,33 @@ h3 {
 
 .calculator-card {
     background: var(--surface-glass);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-card);
-    padding: 3rem;
+    padding: 3.5rem;
     max-width: 800px;
     margin: 0 auto;
     position: relative;
     overflow: hidden;
+}
+
+.calculator-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: var(--glass-shine);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.calculator-card>* {
+    position: relative;
+    z-index: 2;
 }
 
 /* Wizard Steps */
@@ -253,12 +270,15 @@ h3 {
 }
 
 .step-header h2 {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
+    font-size: 2.25rem;
+    margin-bottom: 0.75rem;
+    color: #fff;
+    letter-spacing: -0.02em;
 }
 
 .step-header p {
     color: var(--text-muted);
+    font-size: 1.1rem;
 }
 
 /* Progress Bar */
@@ -269,9 +289,9 @@ h3 {
 }
 
 .progress-bar-bg {
-    background: #E2E8F0;
-    height: 6px;
-    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.05);
+    height: 8px;
+    border-radius: 4px;
     position: relative;
     top: 14px;
     z-index: 1;
@@ -280,9 +300,10 @@ h3 {
 .progress-bar-fill {
     background: var(--accent-color);
     height: 100%;
-    border-radius: 3px;
+    border-radius: 4px;
     width: 20%;
-    transition: width 0.4s ease;
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 0 15px var(--accent-glow);
 }
 
 .steps-indicator {
@@ -293,19 +314,18 @@ h3 {
 }
 
 .step-dot {
-    width: 34px;
-    height: 34px;
-    background: #E2E8F0;
+    width: 38px;
+    height: 38px;
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
     color: var(--text-muted);
-    font-size: 0.9rem;
-    border: 3px solid var(--surface-glass);
-    transition: all 0.3s ease;
-    /* Prevent clicking on future steps by default */
+    font-size: 0.95rem;
+    border: 1px solid var(--glass-border);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: default;
     pointer-events: none;
 }
@@ -326,8 +346,9 @@ h3 {
 
 /* Style for steps we've already passed (optional but good for UX) */
 .step-dot.completed {
-    background: var(--primary-light);
-    color: white;
+    background: rgba(250, 204, 21, 0.1);
+    border-color: var(--accent-color);
+    color: var(--accent-color);
 }
 
 .step-dot.active {
@@ -346,7 +367,8 @@ h3 {
     display: block;
     font-weight: 700;
     margin-bottom: 0.75rem;
-    color: var(--primary-color);
+    color: #fff;
+    font-size: 1rem;
 }
 
 .centered-input {
@@ -377,13 +399,14 @@ h3 {
 }
 
 .shape-option {
-    background: #fff;
-    border: 2px solid #E2E8F0;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-md);
     padding: 1.5rem 0.5rem;
     cursor: pointer;
     text-align: center;
-    transition: all 0.2s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--text-dark);
 }
 
 .shape-option:hover {
@@ -393,8 +416,9 @@ h3 {
 
 .shape-option.selected {
     border-color: var(--accent-color);
-    background: rgba(245, 158, 11, 0.05);
-    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+    background: rgba(250, 204, 21, 0.1);
+    color: #fff;
+    box-shadow: 0 0 20px rgba(250, 204, 21, 0.15);
 }
 
 .roof-icon {
@@ -421,11 +445,12 @@ select,
 input[type="text"] {
     width: 100%;
     padding: 1rem 1.25rem;
-    border: 2px solid #E2E8F0;
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-md);
     font-size: 1.1rem;
-    background-color: #fff;
-    transition: border-color 0.2s;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    transition: all 0.2s;
 }
 
 select:focus,
@@ -600,20 +625,21 @@ input:checked+.slider:before {
 }
 
 .slider-val-display {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary-color);
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #fff;
     margin-bottom: 1rem;
     display: block;
+    letter-spacing: -0.02em;
 }
 
 input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
     width: 100%;
-    height: 12px;
-    border-radius: 6px;
-    background: #E2E8F0;
+    height: 10px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.05);
     outline: none;
     margin: 1.5rem 0;
     transition: background 0.2s;
@@ -635,17 +661,14 @@ input[type="range"].glitter-slider {
     --p: var(--range-percent, 0%);
     --gp: var(--glitter-pos, 0px);
     background:
-        /* Layer 1: Moving Sparkles (Radial Gradients) */
         radial-gradient(circle at 2px 2px, white 1px, transparent 1px) repeat,
         radial-gradient(circle at 10px 10px, rgba(255, 255, 255, 0.8) 1.5px, transparent 1.5px) repeat,
-        /* Layer 2: Fill Color with Gold Hue */
         linear-gradient(to right,
-            #FDE047 0%,
+            #FEF08A 0%,
             var(--accent-color) var(--p),
-            #E2E8F0 var(--p),
-            #E2E8F0 100%);
+            rgba(255, 255, 255, 0.05) var(--p),
+            rgba(255, 255, 255, 0.05) 100%);
     background-size: 20px 20px, 35px 35px, 100% 100%;
-    /* Movement tied to --glitter-pos variable */
     background-position: var(--gp) 0, calc(var(--gp) * -0.5) 0, 0 0;
 }
 
@@ -684,33 +707,45 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .btn-whatsapp {
-    background-color: #25D366;
-    color: white;
-    border: none;
+    background: rgba(37, 211, 102, 0.1);
+    color: #25D366;
+    border: 1px solid rgba(37, 211, 102, 0.3);
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.1);
 }
 
 .btn-whatsapp:hover {
-    background-color: #1FAF54;
+    background: rgba(37, 211, 102, 0.2);
+    border-color: #25D366;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(37, 211, 102, 0.2);
 }
 
 .btn-email {
-    background-color: #EA4335;
-    color: white;
-    border: none;
+    background: rgba(234, 67, 53, 0.1);
+    color: #EA4335;
+    border: 1px solid rgba(234, 67, 53, 0.3);
+    box-shadow: 0 4px 15px rgba(234, 67, 53, 0.1);
 }
 
-/* Gmail Red/Google Red or standard email color */
 .btn-email:hover {
-    background-color: #D93025;
+    background: rgba(234, 67, 53, 0.2);
+    border-color: #EA4335;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(234, 67, 53, 0.2);
 }
 
 .btn-sms {
-    background-color: #3B82F6;
-    color: white;
+    background: rgba(59, 130, 246, 0.1);
+    color: #3B82F6;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.1);
 }
 
 .btn-sms:hover {
-    background-color: #2563EB;
+    background: rgba(59, 130, 246, 0.2);
+    border-color: #3B82F6;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.2);
 }
 
 .btn-call {
@@ -730,17 +765,30 @@ input[type="range"]::-webkit-slider-thumb:hover {
     color: white;
 }
 
-.mb-8 {
-    margin-bottom: 2rem;
+.results-header h3 {
+    color: #fff;
+    font-size: 2.25rem;
+    margin-bottom: 0.5rem;
 }
 
-.text-muted {
-    color: var(--text-muted);
+.confetti-text {
+    color: var(--accent-color);
+    font-weight: 800;
+    font-size: 1.25rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+}
+
+.vertical-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
 }
 
 .icon {
-    margin-right: 8px;
-    font-size: 1.2rem;
+    margin-right: 12px;
+    font-size: 1.4rem;
 }
 
 /* Floating CTA Bar */

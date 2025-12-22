@@ -108,15 +108,16 @@ function initThreeJS() {
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.appendChild(renderer.domElement);
 
-    // Create a mesh (Icosahedron for geometric look)
-    const geometry = new THREE.IcosahedronGeometry(10, 1);
+    // Geometry
+    const geometry = new THREE.TorusKnotGeometry(10, 3, 100, 16);
     const material = new THREE.MeshBasicMaterial({
-        color: 0x1E293B,
+        color: 0xFACC15,
         wireframe: true,
         transparent: true,
-        opacity: 0.1
+        opacity: 0.05
     });
 
     const sphere = new THREE.Mesh(geometry, material);
@@ -133,10 +134,11 @@ function initThreeJS() {
 
     particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
     const particlesMaterial = new THREE.PointsMaterial({
-        size: 0.15,
-        color: 0xF59E0B,
+        size: 0.1,
+        color: 0xffffff,
         transparent: true,
-        opacity: 0.5
+        opacity: 0.8,
+        blending: THREE.AdditiveBlending
     });
     const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
     scene.add(particlesMesh);
