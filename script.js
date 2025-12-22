@@ -83,6 +83,16 @@ function loadRooferConfig() {
         .then(config => {
             rooferConfig = { ...rooferConfig, ...config };
             console.log("%c[Config Success] Roofer config merged:", "color: #10b981; font-weight: bold;", rooferConfig);
+
+            // Personalization
+            const displayName = rooferConfig.companyName || rooferConfig.name || "Roofer";
+            document.title = `${displayName} - Roofing Estimate`;
+
+            const titleLines = document.querySelectorAll('.hero-title .line');
+            if (titleLines.length >= 2) {
+                titleLines[0].innerText = displayName;
+                titleLines[1].innerText = "Estimate Calculator";
+            }
         })
         .catch(error => {
             console.error(`%c[Config Error] Failed to load ${configFile}:`, "color: #ef4444; font-weight: bold;", error);
