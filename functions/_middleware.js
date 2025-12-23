@@ -12,66 +12,101 @@ export async function onRequest(context) {
     // 2. Fetch the original response
     const response = await next();
 
-    // 3. Detect the roofer's name from subdomain (e.g., 'rooferafreen' from 'rooferafreen.pages.dev')
+    // 3. Detect the roofer's name from hostname
     const hostname = url.hostname;
-    const parts = hostname.split('.');
     let clientName = null;
 
-    if (parts.length > 2 && parts[1] === 'pages' && parts[2] === 'dev') {
-        clientName = parts[0];
+    // Handles: rooferkausar.pages.dev, rooferkausar.customdomain.com, etc.
+    // We look for the first part of the hostname
+    if (hostname.includes('.pages.dev')) {
+        clientName = hostname.split('.')[0];
+    } else if (!hostname.includes('localhost') && hostname.includes('.')) {
+        // If it's a custom domain, we might need a different strategy or a mapping
+        // For now, let's assume the first part of the custom domain is the client name
+        // or just fallback to 'roofer_config'
+        clientName = hostname.split('.')[0];
     }
 
-    // If no subdomain detected or we're on a custom domain, we could add fallback logic here
-    if (!clientName) return response;
+    if (!clientName || clientName === 'www') return response;
 
     try {
-        // 4. Fetch the config file directly from your assets
         const configUrl = new URL(`/configs/${clientName}.json`, url.origin);
         const configResponse = await env.ASSETS.fetch(configUrl.toString());
 
-        if (!configResponse.ok) return response;
+        if (!configResponse.ok) {
+            // Log error to Cloudflare console but return generic response
+            console.log(`Config not found for: ${clientName}`);
+            return response;
+        }
 
         const config = await configResponse.json();
         const companyName = config.companyName || config.name || "Roofer";
         const pageTitle = `${companyName} - Roofing Cost Estimate`;
+        const description = `Get an accurate roofing estimate from ${companyName} in minutes. Interactive and easy to use.`;
 
-        // This fetches a 'glimpse' (screenshot) of the current page automatically
-        const screenshotUrl = `https://s0.wp.com/mshots/v1/${url.origin}/?w=1200&h=630`;
+        // Use a more reliable screenshot service (thum.io is often faster than mshots)
+        // We remove the timestamp to allow caching, making it instant for 99% of users
+        const screenshotUrl = `https://image.thum.io/get/width/1200/crop/630/noanim/https://${url.hostname}`;
 
-        // 5. Use HTMLRewriter to inject the dynamic metadata
-        // This happens at the "Edge", so scrapers like WhatsApp see it immediately
-        return new HTMLRewriter()
+        // 5. Use HTMLRewriter to inject the dynamic metadata AND optimize the page for bots
+        let transformedResponse = new HTMLRewriter()
             .on("title", {
-                element(el) {
-                    el.setInnerContent(pageTitle);
-                },
+                element(el) { el.setInnerContent(pageTitle); },
+            })
+            .on('meta[name="description"]', {
+                element(el) { el.setAttribute("content", description); },
             })
             .on('meta[property="og:title"]', {
-                element(el) {
-                    el.setAttribute("content", pageTitle);
-                },
+                element(el) { el.setAttribute("content", pageTitle); },
             })
-            .on('meta[property="twitter:title"]', {
+            .on('meta[property="og:site_name"]', {
+                element(el) { el.setAttribute("content", companyName); },
+            })
+            // Direct injection into the H1 so the screenshot service sees it immediately
+            .on('.hero-title', {
                 element(el) {
-                    el.setAttribute("content", pageTitle);
-                },
+                    el.setInnerContent(`
+            <span class="line">Roofing Cost Estimate</span>
+            <span class="line brand-line">by <span class="company-brand">${companyName}</span></span>
+          `, { html: true });
+                }
+            })
+            // Inject bot-only styles to disable heavy 3D/animations (speeds up screenshots)
+            .on('head', {
+                element(el) {
+                    el.append(`
+            <style>
+              /* Hide heavy assets to speed up screenshot services */
+              #canvas-container, .particles { display: none !important; }
+              .hero { background: #111827 !important; } /* Fallback background */
+              * { animation: none !important; transition: none !important; }
+            </style>
+          `, { html: true });
+                }
             })
             .on('meta[property="og:image"]', {
-                element(el) {
-                    el.setAttribute("content", screenshotUrl);
-                },
+                element(el) { el.setAttribute("content", screenshotUrl); },
             })
             .on('meta[property="twitter:image"]', {
-                element(el) {
-                    el.setAttribute("content", screenshotUrl);
-                },
+                element(el) { el.setAttribute("content", screenshotUrl); },
             })
             .on('meta[property="og:url"]', {
-                element(el) {
-                    el.setAttribute("content", url.origin);
-                },
+                element(el) { el.setAttribute("content", url.origin); },
             })
             .transform(response);
+
+
+        // Add headers to prevent caching while we are fixing the preview issues
+        const newHeaders = new Headers(transformedResponse.headers);
+        newHeaders.set("Cache-Control", "no-cache, no-store, must-revalidate");
+        newHeaders.set("Pragma", "no-cache");
+        newHeaders.set("Expires", "0");
+
+        return new Response(transformedResponse.body, {
+            ...transformedResponse,
+            headers: newHeaders
+        });
+
     } catch (error) {
         console.error("Middleware error:", error);
         return response;
