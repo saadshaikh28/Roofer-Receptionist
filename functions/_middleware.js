@@ -34,7 +34,9 @@ export async function onRequest(context) {
         const config = await configResponse.json();
         const companyName = config.companyName || config.name || "Roofer";
         const pageTitle = `${companyName} - Roofing Cost Estimate`;
-        const fullImageUrl = new URL("hero-bg.png", url.origin).toString();
+
+        // This fetches a 'glimpse' (screenshot) of the current page automatically
+        const screenshotUrl = `https://s0.wp.com/mshots/v1/${url.origin}/?w=1200&h=630`;
 
         // 5. Use HTMLRewriter to inject the dynamic metadata
         // This happens at the "Edge", so scrapers like WhatsApp see it immediately
@@ -56,12 +58,17 @@ export async function onRequest(context) {
             })
             .on('meta[property="og:image"]', {
                 element(el) {
-                    el.setAttribute("content", fullImageUrl);
+                    el.setAttribute("content", screenshotUrl);
                 },
             })
             .on('meta[property="twitter:image"]', {
                 element(el) {
-                    el.setAttribute("content", fullImageUrl);
+                    el.setAttribute("content", screenshotUrl);
+                },
+            })
+            .on('meta[property="og:url"]', {
+                element(el) {
+                    el.setAttribute("content", url.origin);
                 },
             })
             .transform(response);
