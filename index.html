@@ -5,6 +5,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Roofing Cost Estimate</title>
+    <meta name="description" content="Get an accurate roofing estimate in minutes. Interactive and easy to use.">
+
+    <!-- Open Graph / Social Previews -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rooferbanu.pages.dev/"> <!-- Update this if the domain changes -->
+    <meta property="og:title" id="ogTitle" content="Roofing Cost Estimate">
+    <meta property="og:description" content="Get an accurate roofing estimate in minutes. Interactive and easy to use.">
+    <meta property="og:image" content="https://s0.wp.com/mshots/v1/https://rooferbanu.pages.dev/?w=1200&h=630">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://rooferbanu.pages.dev/">
+    <meta property="twitter:title" id="twitterTitle" content="Roofing Cost Estimate">
+    <meta property="twitter:description"
+        content="Get an accurate roofing estimate in minutes. Interactive and easy to use.">
+    <meta property="twitter:image" content="https://s0.wp.com/mshots/v1/https://rooferbanu.pages.dev/?w=1200&h=630">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,6 +33,10 @@
     <link rel="stylesheet" href="styles.css">
 
     <!-- Libraries -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -60,16 +82,19 @@
                     <!-- STEP 1: ABOUT PROPERTY -->
                     <div class="wizard-step active" data-step="1">
                         <div class="step-header">
+                            <span class="step-badge">Section 1 / 3</span>
                             <h2>About the Property</h2>
                             <p>Let's get started with some basic details.</p>
                         </div>
 
-                        <!-- Postal Code -->
-                        <div class="form-group centered-input">
-                            <label for="zipcode">Postal Code</label>
-                            <input type="text" id="zipcode" name="zipcode" placeholder="e.g. SW1A 1AA or 10001"
-                                maxlength="10">
+                        <!-- Interactive Map -->
+                        <div class="form-group">
+                            <label>Select your location on the map.</label>
+                            <div id="map-container" class="glass-panel">
+                                <div id="map"></div>
+                            </div>
                         </div>
+
 
                         <!-- Relation to Property -->
                         <div class="form-group">
@@ -122,6 +147,7 @@
                     <!-- STEP 2: ROOF DETAILS -->
                     <div class="wizard-step" data-step="2">
                         <div class="step-header">
+                            <span class="step-badge">Section 2 / 3</span>
                             <h2>Roof Details</h2>
                             <p>Tell us more about the roof structure.</p>
                         </div>
@@ -238,6 +264,7 @@
                     <!-- STEP 3: ROOF PROBLEMS -->
                     <div class="wizard-step" data-step="3">
                         <div class="step-header">
+                            <span class="step-badge">Section 3 / 3</span>
                             <h2>Roof Problems</h2>
                             <p>What specific issues are you facing?</p>
                         </div>
@@ -283,15 +310,8 @@
                         </div>
                     </div>
 
-                    <!-- STEP 4: RESULTS -->
                     <div class="wizard-step" data-step="4">
                         <div class="results-container">
-                            <div class="results-header">
-                                <h3>Get Your Estimate</h3>
-                                <p class="confetti-text">Estimate Ready!</p>
-                            </div>
-
-                            <p class="mb-8 text-muted">Select a method below to receive your personalized estimate.</p>
 
                             <div class="action-buttons vertical-stack">
                                 <a href="#" id="waBtn" class="btn btn-whatsapp full-width" target="_blank">
